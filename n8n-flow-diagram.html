@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flujo N8N - Comparativo de Seguros | Aztec Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+        .gradient-text { background: linear-gradient(90deg, #ff6d5a, #f4d03f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        
+        /* N8N Node Styles */
+        .n8n-node {
+            position: relative;
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 220px;
+            max-width: 280px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .n8n-node:hover { transform: scale(1.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        
+        .node-trigger { background: linear-gradient(135deg, #ff6d5a 0%, #e74c3c 100%); border: 2px solid #ff6d5a; }
+        .node-action { background: linear-gradient(135deg, #7c4dff 0%, #651fff 100%); border: 2px solid #7c4dff; }
+        .node-code { background: linear-gradient(135deg, #ffd740 0%, #ffab00 100%); border: 2px solid #ffd740; color: #1a1a2e; }
+        .node-ai { background: linear-gradient(135deg, #00e676 0%, #00c853 100%); border: 2px solid #00e676; color: #1a1a2e; }
+        .node-database { background: linear-gradient(135deg, #ff4081 0%, #f50057 100%); border: 2px solid #ff4081; }
+        
+        .connector {
+            width: 3px;
+            background: linear-gradient(to bottom, #ff6d5a, #7c4dff, #00e676, #ff4081);
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .connector::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid #ff4081;
+        }
+        
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.7); }
+            50% { opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+        }
+        
+        .info-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        
+        .info-panel.active {
+            max-height: 500px;
+            opacity: 1;
+        }
+        
+        .data-flow {
+            animation: flowDown 3s infinite;
+        }
+        
+        @keyframes flowDown {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="text-gray-300 min-h-screen">
+    <!-- Header -->
+    <header class="border-b border-gray-800 bg-black/30 backdrop-blur-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold gradient-text">⚡ Flujo N8N</h1>
+                    <p class="text-gray-500 text-sm mt-1">Comparativo de Cotizaciones de Seguros</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-green-500 pulse-dot"></span>
+                        <span class="text-sm text-gray-400">8 Nodos</span>
+                    </div>
+                    <a href="index.html" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm transition">
+                        ← Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12">
+        <!-- Intro -->
+        <div class="text-center mb-12">
+            <h2 class="text-2xl font-semibold text-white mb-4">🔄 Flujo de Automatización End-to-End</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto">
+                Este workflow recibe cotizaciones de seguros en PDF, las procesa con IA, 
+                guarda en base de datos y genera un comparativo visual. 
+                <br><span class="text-cyan-400">Hacé click en cualquier nodo para ver el detalle.</span>
+            </p>
+        </div>
+
+        <!-- Flow Diagram -->
+        <div class="flex flex-col items-center gap-0">
+            
+            <!-- NODE 1: Webhook Trigger -->
+            <div class="n8n-node node-trigger" onclick="toggleInfo('node1')">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-xl">📤</div>
+                    <div>
+                        <h3 class="font-bold text-white">1. Webhook</h3>
+                        <p class="text-xs text-white/70">Trigger - Inicio</p>
+                    </div>
+                </div>
+                <p class="text-sm text-white/90">Recibe PDFs y metadata</p>
+                <div class="mt-2 flex gap-1">
+                    <span class="px-2 py-0.5 bg-black/30 rounded text-xs">POST</span>
+                    <span class="px-2 py-0.5 bg-black/30 rounded text-xs">/recibir-cotizacion</span>
+                </div>
+            </div>
+
+            <!-- Info Panel Node 1 -->
+            <div id="node1" class="info-panel w-full max-w-2xl my-4">
+                <div class="glass rounded-xl p-6 border-l-4 border-red-500">
+                    <h4 class="text-xl font-semibold text-white mb-3">📤 Nodo 1: Webhook (Trigger)</h4>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-400 mb-1">📋 Función:</p>
+                            <p class="text-gray-300">Punto de entrada del sistema. Recibe los archivos PDF de cotizaciones vía HTTP POST.</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 mb-1">⚙️ Configuración:</p>
+                            <ul class="text-gray-300 space-y-1 text-xs">
+                                <li>• Método: POST</li>
+                                <li>• Path: /recibir-cotizacion</li>
+                                <li>• Response Mode: responseNode</li>
+                                <li>• Body: JSON con PDF base64 + metadata</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-black/30 rounded-lg">
+                        <p class="text-xs text-gray-400 mb-1">📥 Input esperado:</p>
+                        <code class="text-xs text-green-400">
+                            { "cliente": "Constructora Bogota", "ramo": "TRDM", "aseguradora": "Sura", "pdf": "base64..." }
+                        </code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connector h-12"></div>
+
+            <!-- NODE 2: Extract Metadata -->
+            <div class="n8n-node node-code" onclick="toggleInfo('node2')">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-black/20 rounded-lg flex items-center justify-center text-xl">📋</div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">2. Extraer Metadatos</h3>
+                        <p class="text-xs text-gray-700">Code Node</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-800">Procesa y estructura input</p>
+                <div class="mt-2 flex gap-1">
+                    <span class="px-2 py-0.5 bg-black/10 rounded text-xs text-gray-800">JavaScript</span>
+                </div>
+            </div>
+
+            <!-- Info Panel Node 2 -->
+            <div id="node2" class="info-panel w-full max-w-2xl my-4">
+                <div class="glass rounded-xl p-6 border-l-4 border-yellow-500">
+                    <h4 class="text-xl font-semibold text-white mb-3">📋 Nodo 2: Extraer Metadatos (Code)</h4>
+                    <div class="text-sm text-gray-300 space-y-3">
+                        <p><strong>📌 Función:</strong> Valida y estructura los datos recibidos del webhook. Genera un ID único para la cotización.</p>
+                        <div class="bg-black/40 rounded-lg p-3">
+                            <p class="text-xs text-gray-400 mb-2">📝 Código ejecutado:</p>
+                            <pre class="text-xs text-yellow-300 overflow-x-auto">const body = $input.first().json.body;
+return {
+  json: {
+    cliente: body.cliente,
+    ramo: body.ramo,
+    aseguradora: body.aseguradora,
+    pdf_base64: body.pdf,
+    cotizacion_id: 'COT-' + Date.now(),
+    timestamp: new Date().toISOString()
+  }
+};</pre>
+                        </div>
+                        <p class="text-xs text-gray-400">✅ Output: Objeto JSON estructurado con metadata de la cotización</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connector h-12"></div>
+
+            <!-- NODE 3: Save PDF -->
+            <div class="n8n-node node-action" onclick="toggleInfo('node3')">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-xl">💾</div>
+                    <div>
+                        <h3 class="font-bold text-white">3. Guardar PDF</h3>
+                        <p class="text-xs text-white/70">Storage</p>
+                    </div>
+                </div>
+                <p class="text-sm text-white/90">Almacena archivo en disco</p>
+                <div class="mt-2 flex gap-1">
+                    <span class="px-2 py-0.5 bg-black/30 rounded text-xs">S3/MinIO</span>
+                </div>
+            </div>
+
+            <!-- Info Panel Node 3 -->
+            <div id="node3" class="info-panel w-full max-w-2xl my-4">
+                <div class="glass rounded-xl p-6 border-l-4 border-purple-500">
+                    <h4 class="text-xl font-semibold text-white mb-3">💾 Nodo 3: Guardar PDF (Storage)</h4>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-400 mb-1">📌 Función:</p>
+                            <p class="text-gray-300">Convierte el base64 a archivo físico y lo guarda en almacenamiento persistente (S3, MinIO o disco local).</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 mb-1">📂 Estructura de carpetas:</p>
+                            <code class="text-xs text-purple-300 block mt-1">
+                                /data/cotizaciones/<br>
+                                └── {cliente}/<br>
+                                    └── {ramo}/<br>
+                                        └── COT-xxx_{aseguradora}.pdf
+                            </code>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-black/30 rounded-lg">
+                        <p class="text-xs text-gray-400">💡 En este paso también se puede extraer el texto del PDF para enviar al LLM</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connector h-12"></div>
+
+            <!-- NODE 4: LLM Extractor -->
+            <div class="n8n-node node-ai" onclick="toggleInfo('node4')">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-black/20 rounded-lg flex items-center justify-center text-xl">🧠</div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">4. LLM Extraer Datos</h3>
+                        <p class="text-xs text-gray-700">OpenAI GPT-4o</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-800">IA analiza el PDF</p>
+                <div class="mt-2 flex gap-1">
+                    <span class="px-2 py-0.5 bg-black/10 rounded text-xs text-gray-800">GPT-4o</span>
+                    <span class="px-2 py-0.5 bg-black/10 rounded text-xs text-gray-800">JSON Mode</span>
+                </div>
+            </div>
+
+            <!-- Info Panel Node 4 -->
+            <div id="node4" class="info-panel w-full max-w-2xl my-4">
+                <div class="glass rounded-xl p-6 border-l-4 border-green-500">
+                    <h4 class="text-xl font-semibold text-white mb-3">🧠 Nodo 4: LLM Extraer Datos (AI)</h4>
+                    <div class="text-sm text-gray-300 space-y-3">
+                        <p><strong>📌 Función:</strong> Envía el texto del PDF a GPT-4o para extracción inteligente de datos estructurados.</p>
+                        
+                        <div class="bg-black/40 rounded-lg p-3">
+                            <p class="text-xs text-gray-400 mb-2">🤖 Prompt de sistema:</p>
+                            <p class="text-xs text-green-300 italic">
+                                "Eres un extractor de datos de cotizaciones de seguros. Extrae SOLO JSON válido con: coberturas (array con nombre, incluida boolean, sub_limite, deducible), prima_total, valor_asegurado, moneda."
+                            </p>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-3 mt-3">
+                            <div class="bg-black/30 p-2 rounded">
+                                <p class="text-xs text-gray-400">📤 Input:</p>
+                                <p class="text-xs text-gray-300">Texto extraído del PDF</p>
+                            </div>
+                            <div class="bg-black/30 p-2 rounded">
+                                <p class="text-xs text-gray-400">📥 Output:</p>
+                                <p class="text-xs text-green-300">JSON estructurado</p>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-400">⚙️ Config: temperature=0.1, response_format: json_object</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connector h-12"></div>
+
+            <!-- NODE 5: PostgreSQL -->
+            <div class="n8n-node node-database" onclick="toggleInfo('node5')">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-xl">🗄️</div>
+                    <div>
+                        <h3 class="font-bold text-white">5. Guardar en DB</h3>
+                        <p class="text-xs text-white/70">PostgreSQL</p>
+                    </div>
+                </div>
+                <p class="text-sm text-white/90">Persiste datos extraídos</p>
+                <div class="mt-2 flex gap-1">
+                    <span class="px-2 py-0.5 bg-black/30 rounded text-xs">INSERT</span>
+                    <span class="px-2 py-0.5 bg-black/30 rounded text-xs">JSONB</span>
+                </div>
+            </div>
+
+            <!-- Info Panel Node 5 -->
+            <div id="node5" class="info-panel w-full max-w-2xl my-4">
+                <div class="glass rounded-xl p-6 border-l-4 border-pink-500">
+                    <h4 class="text-xl font-semibold text-white mb-3">🗄️ Nodo 5: Guardar en PostgreSQL (Database)</h4>
+                    <div class="text-sm text-gray-300 space-y-3">
+                        <p><strong>📌 Función:</strong> Guarda toda la información extraída en la base de datos relacional para consultas posteriores.</p>
+                        
+                        <div class="bg-black/40 rounded-lg p-3">
+                            <p class="text-xs text-gray-400 mb-2">📝 Query ejecutada:</p>
+                            <pre class="text-xs text-pink-300 overflow-x-auto">INSERT INTO cotizaciones 
+  (cotizacion_id, cliente, ramo, aseguradora, 
+   prima_total, valor_asegurado, raw_data, created_at) 
+VALUES ($1, $2, $3, $4, $5, $6, $7, NOW()) 
+RETURNING *;</pre>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="bg-black/30 p-2 rounded">
+                                <span class="text-gray-400">Tabla:</span> <span class="text-pink-300">cotizaciones</span>
+                            </div>
+                            <div class="bg-black/30 p-2 rounded">
+                                <span class="text-gray-400">Datos:</span> <span class="text-pink-300">raw_data (JSONB)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connector h-12"></div>
+
+            <!-- NODE 6: Build Response -->
+            <div class="n8n-node node-code" onclick="toggleInfo('node6')">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-black/20 rounded-lg flex items-center justify-center text-xl">📦</div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">6. Preparar Respuesta</h3>
+                        <p class="text-xs text-gray-700">Code Node</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-800">Construye JSON de salida</p>
+                <div class="mt-2 flex gap-1">
+                    <span class="px-2 py-0.5 bg-black/10 rounded text-xs text-gray-800">Response Builder</span>
+                </div>
+            </div>
+
+            <!-- Info Panel Node 6 -->
+            <div id="node6" class="info-panel w-full max-w-2xl my-4">
+                <div class="glass rounded-xl p-6 border-l-4 border-yellow-500">
+                    <h4 class="text-xl font-semibold text-white mb-3">📦 Nodo 6: Preparar Respuesta (Code)</h4>
+                    <div class="text-sm text-gray-300 space-y-3">
+                        <p><strong>📌 Función:</strong> Construye la respuesta JSON que se devolverá al ejecutivo/ejecutora que envió la cotización.</p>
+                        
+                        <div class="bg-black/40 rounded-lg p-3">
+                            <p class="text-xs text-gray-400 mb-2">📝 Respuesta construida:</p>
+                            <pre class="text-xs text-yellow-300 overflow-x-auto">{
+  "success": true,
+  "cotizacion_id": "COT-20260220-001",
+  "message": "Cotizacion procesada exitosamente",
+  "comparativo_url": "https://aztec-lab.com/comparativo/...",
+  "datos_extraidos": {
+    "prima_total": 45200000,
+    "coberturas_count": 8
+  }
+}</pre>
+                        </div>
+
+                        <p class="text-xs text-gray-400">✅ Esta respuesta se envía al webhook response node</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connector h-12"></div>
+
+            <!-- NODE 7: Respond Webhook -->
+            <div class="n8n-node node-trigger" onclick="toggleInfo('node7')">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-xl">↩️</div>
+                    <div>
+                        <h3 class="font-bold text-white">7. Responder Webhook</h3>
+                        <p class="text-xs text-white/70">Response</p>
+                    </div>
+                </div>
+                <p class="text-sm text-white/90">Retorna JSON al llamador</p>
+                <div class="mt-2 flex gap-1">
+                    <span class="px-2 py-0.5 bg-black/30 rounded text-xs">HTTP 200</span>
+                </div>
+            </div>
+
+            <!-- Info Panel Node 7 -->
+            <div id="node7" class="info-panel w-full max-w-2xl my-4">
+                <div class="glass rounded-xl p-6 border-l-4 border-red-500">
+                    <h4 class="text-xl font-semibold text-white mb-3">↩️ Nodo 7: Responder Webhook (Response)</h4>
+                    <div class="text-sm text-gray-300 space-y-3">
+                        <p><strong>📌 Función:</strong> Envía la respuesta HTTP 200 al sistema que llamó el webhook (puede ser otro sistema, Postman, o un formulario web).</p>
+                        
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="bg-black/30 p-3 rounded">
+                                <p class="text-xs text-gray-400 mb-1">📊 Status Code:</p>
+                                <p class="text-green-400 font-mono">200 OK</p>
+                            </div>
+                            <div class="bg-black/30 p-3 rounded">
+                                <p class="text-xs text-gray-400 mb-1">📄 Content-Type:</p>
+                                <p class="text-blue-400 font-mono">application/json</p>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-400 mt-2">⚡ Response time típico: 5-15 segundos (depende de GPT-4o)</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="connector h-12"></div>
+
+            <!-- NODE 8: Email Notification -->
+            <div class="n8n-node node-action" onclick="toggleInfo('node8')">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-xl">📧</div>
+                    <div>
+                        <h3 class="font-bold text-white">8. Notificar Ejecutivo</h3>
+                        <p class="text-xs text-white/70">Email</p>
+                    </div>
+                </div>
+                <p class="text-sm text-white/90">Envía email con resultado</p>
+                <div class="mt-2 flex gap-1">
+                    <span class="px-2 py-0.5 bg-black/30 rounded text-xs">SMTP</span>
+                    <span class="px-2 py-0.5 bg-black/30 rounded text-xs">HTML</span>
+                </div>
+            </div>
+
+            <!-- Info Panel Node 8 -->
+            <div id="node8" class="info-panel w-full max-w-2xl my-4">
+                <div class="glass rounded-xl p-6 border-l-4 border-purple-500">
+                    <h4 class="text-xl font-semibold text-white mb-3">📧 Nodo 8: Notificar Ejecutivo (Email)</h4>
+                    <div class="text-sm text-gray-300 space-y-3">
+                        <p><strong>📌 Función:</strong> Envía un email al ejecutivo responsable informando que la cotización fue procesada exitosamente con el link al comparativo.</p>
+                        
+                        <div class="bg-black/40 rounded-lg p-3">
+                            <p class="text-xs text-gray-400 mb-2">📧 Contenido del email:</p>
+                            <div class="text-xs text-gray-300 space-y-1">
+                                <p><strong>Subject:</strong> Nueva cotización procesada - {Aseguradora}</p>
+                                <p><strong>Body HTML:</strong></p>
+                                <ul class="ml-4 space-y-1 text-purple-300">
+                                    <li>• Nombre de aseguradora</li>
+                                    <li>• Prima total detectada</li>
+                                    <li>• Link a: Ver comparativo</li>
+                                    <li>• Link a: Exportar Excel</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-400">🔔 Este nodo corre en paralelo (no bloquea la respuesta al webhook)</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Flow Summary -->
+        <div class="mt-16 glass rounded-2xl p-8">
+            <h3 class="text-2xl font-semibold text-white mb-6 text-center">📊 Resumen del Flujo</h3>
+            <div class="grid md:grid-cols-4 gap-6 text-center">
+                <div class="p-4 bg-red-500/10 rounded-xl border border-red-500/30">
+                    <p class="text-3xl font-bold text-red-400">1</p>
+                    <p class="text-sm text-gray-400">Trigger</p>
+                    <p class="text-xs text-gray-500 mt-1">Inicio por webhook</p>
+                </div>
+                <div class="p-4 bg-yellow-500/10 rounded-xl border border-yellow-500/30">
+                    <p class="text-3xl font-bold text-yellow-400">2</p>
+                    <p class="text-sm text-gray-400">Code Nodes</p>
+                    <p class="text-xs text-gray-500 mt-1">Procesamiento JS</p>
+                </div>
+                <div class="p-4 bg-green-500/10 rounded-xl border border-green-500/30">
+                    <p class="text-3xl font-bold text-green-400">1</p>
+                    <p class="text-sm text-gray-400">AI Node</p>
+                    <p class="text-xs text-gray-500 mt-1">GPT-4o extracción</p>
+                </div>
+                <div class="p-4 bg-pink-500/10 rounded-xl border border-pink-500/30">
+                    <p class="text-3xl font-bold text-pink-400">4</p>
+                    <p class="text-sm text-gray-400">Action Nodes</p>
+                    <p class="text-xs text-gray-500 mt-1">Storage, DB, Email</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Execution Flow -->
+        <div class="mt-8 glass rounded-2xl p-6">
+            <h4 class="text-lg font-semibold text-white mb-4">⏱️ Tiempo de Ejecución Estimado</h4>
+            <div class="space-y-3">
+                <div class="flex items-center gap-4">
+                    <div class="w-24 text-right text-xs text-gray-500">0-1s</div>
+                    <div class="flex-1 h-6 bg-red-500/30 rounded flex items-center px-2 text-xs">Webhook + Validación</div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-24 text-right text-xs text-gray-500">1-2s</div>
+                    <div class="flex-1 h-6 bg-yellow-500/30 rounded flex items-center px-2 text-xs">Guardar PDF + Extraer texto</div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-24 text-right text-xs text-gray-500">2-8s</div>
+                    <div class="flex-1 h-6 bg-green-500/30 rounded flex items-center px-2 text-xs">GPT-4o procesando PDF (el más lento)</div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-24 text-right text-xs text-gray-500">8-10s</div>
+                    <div class="flex-1 h-6 bg-pink-500/30 rounded flex items-center px-2 text-xs">Guardar DB + Responder + Email</div>
+                </div>
+            </div>
+            <p class="text-center text-sm text-gray-400 mt-4">⏱️ Total estimado: <span class="text-white font-bold">8-12 segundos</span> por cotización</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 text-center">
+            <a href="index.html" class="inline-flex items-center gap-2 px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl transition">
+                ← Volver al Command Center
+            </a>
+        </div>
+    </main>
+
+    <script>
+        function toggleInfo(nodeId) {
+            // Close all other panels
+            document.querySelectorAll('.info-panel').forEach(panel => {
+                if (panel.id !== nodeId) {
+                    panel.classList.remove('active');
+                }
+            });
+            
+            // Toggle current panel
+            const panel = document.getElementById(nodeId);
+            panel.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
