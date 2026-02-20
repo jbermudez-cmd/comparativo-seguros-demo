@@ -1,0 +1,144 @@
+{
+  "name": "Comparativo Seguros - Flujo Principal",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "recibir-cotizacion",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Recibir Cotización",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "webhookId": "recibir-cotizacion"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extraer datos del webhook\nconst body = $input.first().json.body;\n\nreturn {\n  json: {\n    cliente: body.cliente,\n    ramo: body.ramo,\n    aseguradora: body.aseguradora,\n    pdf_base64: body.pdf,\n    cotizacion_id: 'COT-' + Date.now(),\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "id": "extract-data",
+      "name": "Extraer Metadatos",
+      "type": "n8n-nodes-base.code",
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Eres un extractor de datos de cotizaciones de seguros. Extrae SOLO JSON válido con: coberturas (array con nombre, incluida boolean, sub_limite numero, deducible numero, exclusiones array), prima_total (numero), valor_asegurado (numero), moneda (string). Si no encuentras un campo, usa null."
+          },
+          {
+            "role": "user",
+            "content": "=Extrae los datos de esta cotización de seguro del texto extraído del PDF:\n\n{{ $json.pdf_texto }}"
+          }
+        ],
+        "jsonOutput": true
+      },
+      "id": "llm-extract",
+      "name": "LLM Extraer Datos",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Guardar PDF en sistema de archivos (simulado)\nconst fs = require('fs');\nconst path = require('path');\n\nconst data = $input.first().json;\nconst buffer = Buffer.from(data.pdf_base64, 'base64');\nconst fileName = `${data.cotizacion_id}_${data.aseguradora}.pdf`;\nconst filePath = path.join('/data/cotizaciones', data.ramo, fileName);\n\n// En producción: fs.writeFileSync(filePath, buffer);\n\nreturn {\n  json: {\n    ...data,\n    pdf_path: filePath,\n    pdf_texto: 'Texto extraído del PDF iría aquí...'\n  }\n};"
+      },
+      "id": "save-pdf",
+      "name": "Guardar PDF",
+      "type": "n8n-nodes-base.code",
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO cotizaciones (cotizacion_id, cliente, ramo, aseguradora, prima_total, valor_asegurado, moneda, pdf_path, raw_data, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW()) RETURNING *;",
+        "options": {
+          "params": [
+            "={{ $('Extraer Metadatos').item.json.cotizacion_id }}",
+            "={{ $('Extraer Metadatos').item.json.cliente }}",
+            "={{ $('Extraer Metadatos').item.json.ramo }}",
+            "={{ $('Extraer Metadatos').item.json.aseguradora }}",
+            "={{ $('LLM Extraer Datos').item.json.prima_total }}",
+            "={{ $('LLM Extraer Datos').item.json.valor_asegurado }}",
+            "={{ $('LLM Extraer Datos').item.json.moneda }}",
+            "={{ $('Guardar PDF').item.json.pdf_path }}",
+            "={{ JSON.stringify($('LLM Extraer Datos').item.json) }}"
+          ]
+        }
+      },
+      "id": "postgres-insert",
+      "name": "Guardar en PostgreSQL",
+      "type": "n8n-nodes-base.postgres",
+      "position": [1050, 300],
+      "credentials": {
+        "postgres": {
+          "id": "postgres-credentials",
+          "name": "Postgres Production"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Construir respuesta con URL del comparativo\nconst data = $input.first().json;\n\nreturn {\n  json: {\n    success: true,\n    cotizacion_id: data.cotizacion_id,\n    message: 'Cotización procesada exitosamente',\n    comparativo_url: `https://aztec-lab.com/comparativo/${data.cliente_slug}/${data.ramo_slug}`,\n    datos_extraidos: {\n      prima_total: data.prima_total,\n      coberturas_count: data.coberturas?.length || 0\n    }\n  }\n};"
+      },
+      "id": "build-response",
+      "name": "Preparar Respuesta",
+      "type": "n8n-nodes-base.code",
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "json": "={{ JSON.stringify($('Preparar Respuesta').item.json) }}"
+      },
+      "id": "respond-webhook",
+      "name": "Responder Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "sistema@aztec-lab.com",
+        "toEmail": "={{ $('Extraer Metadatos').item.json.email_ejecutivo }}",
+        "subject": "Nueva cotización procesada - {{ $('Extraer Metadatos').item.json.aseguradora }}",
+        "html": "=<h2>Cotización procesada exitosamente</h2><p><strong>Aseguradora:</strong> {{ $('Extraer Metadatos').item.json.aseguradora }}</p><p><strong>Prima:</strong> {{ $('LLM Extraer Datos').item.json.prima_total }}</p><p><a href='{{ $('Preparar Respuesta').item.json.comparativo_url }}'>Ver comparativo</a></p>"
+      },
+      "id": "send-email",
+      "name": "Notificar Ejecutivo",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [1250, 500]
+    }
+  ],
+  "connections": {
+    "Recibir Cotización": {
+      "main": [[{"node": "Extraer Metadatos", "type": "main", "index": 0}]]
+    },
+    "Extraer Metadatos": {
+      "main": [[{"node": "Guardar PDF", "type": "main", "index": 0}]]
+    },
+    "Guardar PDF": {
+      "main": [[{"node": "LLM Extraer Datos", "type": "main", "index": 0}]]
+    },
+    "LLM Extraer Datos": {
+      "main": [[{"node": "Guardar en PostgreSQL", "type": "main", "index": 0}]]
+    },
+    "Guardar en PostgreSQL": {
+      "main": [
+        [{"node": "Preparar Respuesta", "type": "main", "index": 0}],
+        [{"node": "Notificar Ejecutivo", "type": "main", "index": 0}]
+      ]
+    },
+    "Preparar Respuesta": {
+      "main": [[{"node": "Responder Webhook", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": []
+}

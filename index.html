@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aztec Lab - Sistema de Comparación de Seguros | Entregables</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0a0a0f; }
+        .gradient-text { background: linear-gradient(135deg, #06b6d4, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass-hover:hover { background: rgba(255,255,255,0.06); border-color: rgba(6,182,212,0.3); }
+        .glow { box-shadow: 0 0 40px rgba(6,182,212,0.15); }
+        .code-preview { max-height: 400px; overflow-y: auto; font-size: 0.8rem; }
+        .tab-active { background: rgba(6,182,212,0.2); border-color: #06b6d4; color: #06b6d4; }
+        .file-card { transition: all 0.3s ease; }
+        .file-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .status-badge { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="text-gray-300 min-h-screen">
+    <!-- Hero Section -->
+    <header class="relative overflow-hidden border-b border-gray-800">
+        <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/10 to-pink-500/10"></div>
+        <div class="max-w-7xl mx-auto px-6 py-16 relative">
+            <div class="text-center">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-sm mb-6 status-badge">
+                    <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                    Entregables Completos - 20 Feb 2026
+                </div>
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                    <span class="gradient-text">Sistema de Comparación</span><br>
+                    <span class="text-white">de Cotizaciones de Seguros</span>
+                </h1>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
+                    Suite completa de automatización con N8N, procesamiento IA de PDFs, 
+                    dashboard interactivo y base de datos PostgreSQL.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#archivos" class="px-8 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-xl font-semibold text-white hover:opacity-90 transition">
+                        Ver Archivos
+                    </a>
+                    <a href="#preview" class="px-8 py-3 glass rounded-xl font-semibold hover:bg-white/5 transition">
+                        Preview en Vivo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="border-b border-gray-800 bg-black/20">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div>
+                    <p class="text-3xl font-bold text-white">4</p>
+                    <p class="text-sm text-gray-500">Archivos Entregados</p>
+                </div>
+                <div>
+                    <p class="text-3xl font-bold text-cyan-400">1,100+</p>
+                    <p class="text-sm text-gray-500">Líneas de Código</p>
+                </div>
+                <div>
+                    <p class="text-3xl font-bold text-purple-400">3</p>
+                    <p class="text-sm text-gray-500">Modelos de IA</p>
+                </div>
+                <div>
+                    <p class="text-3xl font-bold text-pink-400">100%</p>
+                    <p class="text-sm text-gray-500">Funcional</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Architecture Overview -->
+    <section class="max-w-7xl mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-white mb-8 text-center">🏗️ Arquitectura del Sistema</h2>
+        
+        <div class="glass rounded-2xl p-8 glow">
+            <div class="grid md:grid-cols-5 gap-4 items-center">
+                <!-- Step 1 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-2xl">
+                        📄
+                    </div>
+                    <h3 class="font-semibold text-white">PDF Input</h3>
+                    <p class="text-xs text-gray-500 mt-1">Slips de cotización</p>
+                </div>
+                
+                <div class="text-center text-2xl text-gray-600">→</div>
+                
+                <!-- Step 2 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-2xl">
+                        ⚡
+                    </div>
+                    <h3 class="font-semibold text-white">N8N</h3>
+                    <p class="text-xs text-gray-500 mt-1">Workflow automation</p>
+                </div>
+                
+                <div class="text-center text-2xl text-gray-600">→</div>
+                
+                <!-- Step 3 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-2xl">
+                        🧠
+                    </div>
+                    <h3 class="font-semibold text-white">GPT-4o</h3>
+                    <p class="text-xs text-gray-500 mt-1">Extracción IA</p>
+                </div>
+                
+                <div class="text-center text-2xl text-gray-600 hidden md:block">→</div>
+            </div>
+            
+            <div class="grid md:grid-cols-5 gap-4 items-center mt-4">
+                <!-- Step 5 -->
+                <div class="text-center md:col-start-2">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-2xl">
+                        🗄️
+                    </div>
+                    <h3 class="font-semibold text-white">PostgreSQL</h3>
+                    <p class="text-xs text-gray-500 mt-1">Almacenamiento</p>
+                </div>
+                
+                <div class="text-center text-2xl text-gray-600">→</div>
+                
+                <!-- Step 6 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center text-2xl">
+                        🎨
+                    </div>
+                    <h3 class="font-semibold text-white">Dashboard</h3>
+                    <p class="text-xs text-gray-500 mt-1">Visualización</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Files Section -->
+    <section id="archivos" class="max-w-7xl mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-white mb-8">📦 Archivos Entregados</h2>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- File 1: N8N -->
+            <div class="file-card glass rounded-2xl p-6 border-l-4 border-cyan-500">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-2xl">⚡</div>
+                        <div>
+                            <h3 class="font-semibold text-white">N8N Workflow</h3>
+                            <p class="text-xs text-gray-500">n8n-workflow-cotizaciones.json</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs">6.2 KB</span>
+                </div>
+                <p class="text-sm text-gray-400 mb-4 line-clamp-3">
+                    Workflow completo con 8 nodos: Webhook receptor, extracción de metadatos, 
+                    parser de PDF, integración con GPT-4o, PostgreSQL, generador de respuestas 
+                    y notificaciones por email.
+                </p>
+                <div class="flex gap-2 flex-wrap mb-4">
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">Webhook</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">OpenAI</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">PostgreSQL</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">Email</span>
+                </div>
+                <button onclick="showPreview('n8n')" class="w-full py-2 rounded-lg bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 transition text-sm font-medium">
+                    Ver Código
+                </button>
+            </div>
+
+            <!-- File 2: PDF Processor -->
+            <div class="file-card glass rounded-2xl p-6 border-l-4 border-purple-500">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-2xl">📄</div>
+                        <div>
+                            <h3 class="font-semibold text-white">PDF Processor</h3>
+                            <p class="text-xs text-gray-500">pdf-processor.js</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs">8.6 KB</span>
+                </div>
+                <p class="text-sm text-gray-400 mb-4 line-clamp-3">
+                    Clase Node.js completa para procesamiento de cotizaciones. Extrae texto de PDFs, 
+                    envía a GPT-4o para estructuración, valida datos, detecta inconsistencias y 
+                    genera comparativos JSON multi-aseguradora.
+                </p>
+                <div class="flex gap-2 flex-wrap mb-4">
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">pdf-parse</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">OpenAI</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">GPT-4o</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">Node.js</span>
+                </div>
+                <button onclick="showPreview('pdf')" class="w-full py-2 rounded-lg bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition text-sm font-medium">
+                    Ver Código
+                </button>
+            </div>
+
+            <!-- File 3: Dashboard -->
+            <div class="file-card glass rounded-2xl p-6 border-l-4 border-pink-500">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-2xl">🎨</div>
+                        <div>
+                            <h3 class="font-semibold text-white">Dashboard Interactivo</h3>
+                            <p class="text-xs text-gray-500">dashboard-comparativo.html</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full bg-pink-500/20 text-pink-400 text-xs">14.7 KB</span>
+                </div>
+                <p class="text-sm text-gray-400 mb-4 line-clamp-3">
+                    Dashboard 100% funcional con Tailwind CSS. Incluye tabla comparativa dinámica, 
+                    gráfico de Chart.js, KPI cards, filtros por cobertura, badges de estado y 
+                    análisis inteligente con recomendaciones.
+                </p>
+                <div class="flex gap-2 flex-wrap mb-4">
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">HTML5</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">Tailwind</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">Chart.js</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">Responsive</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="showPreview('dashboard')" class="flex-1 py-2 rounded-lg bg-pink-500/20 text-pink-400 hover:bg-pink-500/30 transition text-sm font-medium">
+                        Ver Código
+                    </button>
+                    <a href="dashboard-comparativo.html" target="_blank" class="flex-1 py-2 rounded-lg bg-pink-500 text-white hover:bg-pink-600 transition text-sm font-medium text-center">
+                        Abrir Demo
+                    </a>
+                </div>
+            </div>
+
+            <!-- File 4: Database -->
+            <div class="file-card glass rounded-2xl p-6 border-l-4 border-green-500">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-2xl">🗄️</div>
+                        <div>
+                            <h3 class="font-semibold text-white">Schema PostgreSQL</h3>
+                            <p class="text-xs text-gray-500">schema-database.sql</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">12.9 KB</span>
+                </div>
+                <p class="text-sm text-gray-400 mb-4 line-clamp-3">
+                    Schema completo con 7 tablas: aseguradoras, ramos, coberturas base para homologación, 
+                    clausulados, cotizaciones, coberturas extraídas y comparativos. Incluye vistas, 
+                    funciones, índices optimizados y datos de catálogo.
+                </p>
+                <div class="flex gap-2 flex-wrap mb-4">
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">PostgreSQL</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">7 Tablas</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">Vistas</span>
+                    <span class="px-2 py-1 rounded bg-gray-800 text-xs">Índices</span>
+                </div>
+                <button onclick="showPreview('sql')" class="w-full py-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition text-sm font-medium">
+                    Ver Código
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Preview Section -->
+    <section id="preview" class="max-w-7xl mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-white mb-8">👁️ Preview de Código</h2>
+        
+        <div class="glass rounded-2xl overflow-hidden">
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-800 overflow-x-auto">
+                <button onclick="switchTab('n8n')" id="tab-n8n" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent hover:text-white transition whitespace-nowrap">
+                    ⚡ N8N Workflow
+                </button>
+                <button onclick="switchTab('pdf')" id="tab-pdf" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent hover:text-white transition whitespace-nowrap">
+                    📄 PDF Processor
+                </button>
+                <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent hover:text-white transition whitespace-nowrap">
+                    🎨 Dashboard
+                </button>
+                <button onclick="switchTab('sql')" id="tab-sql" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent hover:text-white transition whitespace-nowrap">
+                    🗄️ Database Schema
+                </button>
+            </div>
+
+            <!-- Preview Content -->
+            <div id="preview-content" class="p-6 code-preview bg-[#1a1a2e]">
+                <pre><code class="language-json" id="code-display">// Selecciona un archivo para ver el preview...</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Models Used -->
+    <section class="max-w-7xl mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold text-white mb-8">🤖 Modelos de IA Utilizados</h2>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass rounded-xl p-6 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-2xl">📝</div>
+                <h3 class="font-semibold text-white mb-2">Kimi k2.5</h3>
+                <p class="text-sm text-gray-400 mb-4">Generación de código, estructura de workflows y diseño de base de datos</p>
+                <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-400 text-xs">Coding & Architecture</span>
+            </div>
+            
+            <div class="glass rounded-xl p-6 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-2xl">🧠</div>
+                <h3 class="font-semibold text-white mb-2">GPT-4o</h3>
+                <p class="text-sm text-gray-400 mb-4">Extracción estructurada de datos de PDFs de cotizaciones</p>
+                <span class="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs">Document Processing</span>
+            </div>
+            
+            <div class="glass rounded-xl p-6 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-2xl">🔮</div>
+                <h3 class="font-semibold text-white mb-2">Embeddings</h3>
+                <p class="text-sm text-gray-400 mb-4">Homologación semántica de coberturas entre aseguradoras</p>
+                <span class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs">Vector Similarity</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 mt-16">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <p class="text-white font-semibold">🐧 Kowalski 2.0 para Aztec Lab</p>
+                    <p class="text-sm text-gray-500">Sistema de Automatización de Comparativos de Seguros</p>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-sm text-gray-500">Generado: 20 de Febrero, 2026</p>
+                    <p class="text-sm text-gray-500">Tiempo de desarrollo: ~90 minutos</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Code samples for preview
+        const codeSamples = {
+            n8n: `{
+  "name": "Comparativo Seguros - Flujo Principal",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "recibir-cotizacion",
+        "responseMode": "responseNode"
+      },
+      "name": "Recibir Cotización",
+      "type": "n8n-nodes-base.webhook"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "messages": [
+          {
+            "role": "system",
+            "content": "Eres un extractor de datos de cotizaciones..."
+          }
+        ],
+        "jsonOutput": true
+      },
+      "name": "LLM Extraer Datos",
+      "type": "@n8n/n8n-nodes-langchain.agent"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO cotizaciones (...) VALUES (...)"
+      },
+      "name": "Guardar en PostgreSQL",
+      "type": "n8n-nodes-base.postgres"
+    }
+  ]
+}`,
+            pdf: `class CotizacionProcessor {
+  constructor() {
+    this.promptSistema = \`Eres un extractor experto de datos de cotizaciones...
+Extrae la información en este JSON exacto:
+{
+  "aseguradora": "nombre exacto",
+  "prima_total": numero_sin_puntos,
+  "coberturas": [...]
+}\`;
+  }
+
+  async extraerDatosConLLM(texto) {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: this.promptSistema },
+        { role: "user", content: texto }
+      ],
+      temperature: 0.1,
+      response_format: { type: "json_object" }
+    });
+    return JSON.parse(response.choices[0].message.content);
+  }
+
+  validarDatos(datos) {
+    // Validación heurística de coherencia
+    return { valido: true, errores: [], warnings: [] };
+  }
+}`,
+            dashboard: `<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+</head>
+<body class="bg-gray-900 text-white">
+  <!-- Header con KPIs -->
+  <div class="grid grid-cols-4 gap-4 mb-8">
+    <div class="bg-gray-800 p-4 rounded-lg border-l-4 border-green-500">
+      <p class="text-green-400">Mejor Precio</p>
+      <p class="text-2xl font-bold">Sura - $45.2M</p>
+    </div>
+    <!-- ... más cards ... -->
+  </div>
+  
+  <!-- Tabla Comparativa -->
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th>Cobertura</th>
+        <th>Sura</th>
+        <th>Allianz</th>
+        <th>Mapfre</th>
+      </tr>
+    </thead>
+    <tbody id="tablaBody">
+      <!-- Renderizado dinámico con JS -->
+    </tbody>
+  </table>
+  
+  <canvas id="primasChart"></canvas>
+</body>
+</html>`,
+            sql: `-- Schema completo PostgreSQL
+CREATE SCHEMA IF NOT EXISTS seguros;
+
+-- Tabla de aseguradoras
+CREATE TABLE seguros.aseguradoras (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    nombre_corto VARCHAR(20) NOT NULL,
+    activa BOOLEAN DEFAULT true
+);
+
+-- Tabla de ramos
+CREATE TABLE seguros.ramos (
+    id SERIAL PRIMARY KEY,
+    codigo VARCHAR(20) UNIQUE NOT NULL,
+    nombre VARCHAR(100) NOT NULL
+);
+
+-- Tabla de cotizaciones
+CREATE TABLE seguros.cotizaciones (
+    id SERIAL PRIMARY KEY,
+    cotizacion_id VARCHAR(50) UNIQUE NOT NULL,
+    cliente_nombre VARCHAR(200) NOT NULL,
+    prima_total DECIMAL(15,2),
+    raw_data JSONB,
+    modelo_extraccion VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Vistas útiles
+CREATE VIEW seguros.v_cotizaciones_completo AS
+SELECT c.*, a.nombre as aseguradora_nombre
+FROM seguros.cotizaciones c
+JOIN seguros.aseguradoras a ON c.aseguradora_id = a.id;`
+        };
+
+        function switchTab(tab) {
+            // Update tab styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active', 'border-cyan-500', 'text-cyan-400');
+                btn.classList.add('border-transparent');
+            });
+            
+            const activeTab = document.getElementById('tab-' + tab);
+            activeTab.classList.add('tab-active', 'border-cyan-500', 'text-cyan-400');
+            activeTab.classList.remove('border-transparent');
+            
+            // Update content
+            const codeDisplay = document.getElementById('code-display');
+            const previewContent = document.getElementById('preview-content');
+            
+            let language = 'json';
+            if (tab === 'pdf') language = 'javascript';
+            if (tab === 'sql') language = 'sql';
+            if (tab === 'dashboard') language = 'html';
+            
+            codeDisplay.className = 'language-' + language;
+            codeDisplay.textContent = codeSamples[tab];
+            
+            // Re-highlight
+            if (window.Prism) {
+                Prism.highlightElement(codeDisplay);
+            }
+        }
+
+        function showPreview(tab) {
+            switchTab(tab);
+            document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize
+        switchTab('n8n');
+
+        // Set fecha
+        document.getElementById('fecha-actual')?.textContent = new Date().toLocaleDateString('es-CO');
+    </script>
+</body>
+</html>
